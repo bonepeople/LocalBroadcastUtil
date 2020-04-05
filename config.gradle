@@ -1,0 +1,24 @@
+ext {
+    android = [
+            minSdkVersion    : 21,
+            targetSdkVersion : 29,
+            compileSdkVersion: 29,
+            buildToolsVersion: "29.0.3",
+            versionCode      : 1,
+            versionName      : "1.0",
+    ]
+    publish = [
+            userName      : "bonepeople",
+            repositoryName: "android",
+
+            groupId       : "com.bonepeople.android.support",
+            artifactId    : "LocalBroadcastUtil",
+            publishVersion: "1.0",
+            licences      : ['Apache-2.0'],
+
+            projectName   : "LocalBroadcastUtil",
+            projectDesc   : "Util for LocalBroadcastManager",
+            githubUrl     : "https://github.com/bonepeople/LocalBroadcastUtil",
+            gitUrl        : "https://github.com/bonepeople/LocalBroadcastUtil.git",
+    ]
+}
