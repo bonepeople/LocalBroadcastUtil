@@ -6,13 +6,29 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
+    <fragment
+        android:id="@+id/fragment_a"
+        android:name="com.bonepeople.android.localbroadcastutil.simple.FragmentA"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        app:layout_constraintBottom_toTopOf="@id/fragment_b"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <fragment
+        android:id="@+id/fragment_b"
+        android:name="com.bonepeople.android.localbroadcastutil.simple.FragmentB"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_margin="10dp"
+        app:layout_constraintBottom_toTopOf="@id/textView_hint"
+        app:layout_constraintTop_toBottomOf="@id/fragment_a" />
+
+    <TextView
+        android:id="@+id/textView_hint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="FragmentA中的的按钮在点击的时候通过本地广播发送了一个通知，FragmentB中响应FragmentA发送的广播进行界面的更新。此种方式同样可以用在多个Activity同步更新时。\n\n使用本地广播传递事件可以将事件间的关系进行解耦，方便应对复杂的需求。"
+        app:layout_constraintBottom_toBottomOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>
