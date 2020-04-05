@@ -1,2 +1,3 @@
 rootProject.name='LocalBroadcastUtil'
 include ':simple'
+include ':localbroadcastutil'
