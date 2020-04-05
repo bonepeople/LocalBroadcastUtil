@@ -28,6 +28,7 @@ public class LocalBroadcastUtil {
 
     /**
      * 注册广播接收器
+     * <p>该方法重复调用仅会使用最新的参数注册一次</p>
      *
      * @param receiver 非空的广播接收器
      * @param actions  广播的筛选字段，该字段会被加入到action中，需要包含至少一个广播筛选字段
@@ -44,6 +45,7 @@ public class LocalBroadcastUtil {
 
     /**
      * 注册广播接收器
+     * <p>该方法重复调用仅会使用最新的参数注册一次</p>
      *
      * @param receiver 非空的广播接收器
      * @param filter   广播筛选条件
