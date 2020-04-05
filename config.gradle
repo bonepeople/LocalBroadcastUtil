@@ -10,6 +10,7 @@ ext {
     publish = [
             userName      : "bonepeople",
             repositoryName: "android",
+            uploadName    : "LocalBroadcastUtil-support",
 
             groupId       : "com.bonepeople.android.support",
             artifactId    : "LocalBroadcastUtil",

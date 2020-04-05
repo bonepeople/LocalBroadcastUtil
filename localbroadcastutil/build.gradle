@@ -42,9 +42,12 @@ dependencies {
 publish {
     userOrg = rootProject.publish.userName
     repoName = rootProject.publish.repositoryName
+    uploadName = rootProject.publish.uploadName
+
     groupId = rootProject.publish.groupId
     artifactId = rootProject.publish.artifactId
     publishVersion = rootProject.publish.publishVersion
+
     desc = rootProject.publish.projectDesc
     website = rootProject.publish.githubUrl
 }
