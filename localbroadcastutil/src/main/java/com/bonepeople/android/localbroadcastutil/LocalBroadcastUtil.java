@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.lifecycle.LifecycleOwner;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import java.util.Objects;
@@ -38,13 +40,27 @@ public class LocalBroadcastUtil {
      * @param actions  广播的筛选字段，该字段会被加入到action中，需要包含至少一个广播筛选字段
      */
     public static void registerReceiver(@NonNull BroadcastReceiver receiver, @NonNull String... actions) {
+        registerReceiver(null, receiver, actions);
+    }
+
+    /**
+     * 注册广播接收器
+     * <p>
+     * 广播接收器将绑定至LifecycleOwner，在onDestroy的时候自动注销，Activity和Fragment均已实现LifecycleOwner接口
+     * <p>该方法重复调用仅会使用最新的参数注册一次</p>
+     *
+     * @param lifecycleOwner 被绑定的Activity、Fragment
+     * @param receiver       非空的广播接收器
+     * @param actions        广播的筛选字段，该字段会被加入到action中，需要包含至少一个广播筛选字段
+     */
+    public static void registerReceiver(@Nullable LifecycleOwner lifecycleOwner, @NonNull BroadcastReceiver receiver, @NonNull String... actions) {
         if (actions.length < 1)
             throw new IllegalArgumentException("注册广播需要包含至少一个广播筛选字段");
         IntentFilter filter = new IntentFilter();
         for (String action : actions) {
             filter.addAction(action);
         }
-        registerReceiver(receiver, filter);
+        registerReceiver(lifecycleOwner, receiver, filter);
     }
 
     /**
@@ -55,7 +71,23 @@ public class LocalBroadcastUtil {
      * @param filter   广播筛选条件
      */
     public static void registerReceiver(@NonNull BroadcastReceiver receiver, @NonNull IntentFilter filter) {
+        registerReceiver(null, receiver, filter);
+    }
+
+    /**
+     * 注册广播接收器
+     * <p>
+     * 广播接收器将绑定至LifecycleOwner，在onDestroy的时候自动注销，Activity和Fragment均已实现LifecycleOwner接口
+     * <p>该方法重复调用仅会使用最新的参数注册一次</p>
+     *
+     * @param lifecycleOwner 被绑定的Activity、Fragment
+     * @param receiver       非空的广播接收器
+     * @param filter         广播筛选条件
+     */
+    public static void registerReceiver(@Nullable LifecycleOwner lifecycleOwner, @NonNull BroadcastReceiver receiver, @NonNull IntentFilter filter) {
         checkNotNull(receiver, filter);
+        if (lifecycleOwner != null)
+            bindLifecycle(lifecycleOwner, receiver);
         //防止重复注册，在注册之前先注销原有接收器
         broadcastManager.unregisterReceiver(receiver);
         broadcastManager.registerReceiver(receiver, filter);
@@ -70,6 +102,18 @@ public class LocalBroadcastUtil {
     public static void unregisterReceiver(@NonNull BroadcastReceiver receiver) {
         checkNotNull(receiver);
         broadcastManager.unregisterReceiver(receiver);
+    }
+
+    /**
+     * 绑定广播接收器至界面的生命周期
+     * <p>Activity和Fragment均已实现LifecycleOwner接口，可以直接绑定它们的生命周期</p>
+     *
+     * @param lifecycleOwner 被绑定的Activity、Fragment
+     * @param receiver       需要在Activity、Fragment销毁时注销的广播接收器
+     */
+    public static void bindLifecycle(@NonNull LifecycleOwner lifecycleOwner, @NonNull BroadcastReceiver receiver) {
+        checkNotNull(lifecycleOwner, receiver);
+        lifecycleOwner.getLifecycle().addObserver(new OnDestroyListener(receiver));
     }
 
     /**
