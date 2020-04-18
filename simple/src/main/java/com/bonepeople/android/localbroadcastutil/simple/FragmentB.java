@@ -22,7 +22,7 @@ public class FragmentB extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        LocalBroadcastUtil.registerReceiver(receiver, Constants.BROADCAST_INCREASE, Constants.BROADCAST_REDUCE);
+        LocalBroadcastUtil.registerReceiver(this, receiver, Constants.BROADCAST_INCREASE, Constants.BROADCAST_REDUCE);
     }
 
     @Nullable
@@ -35,12 +35,6 @@ public class FragmentB extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         textView_number = view.findViewById(R.id.textView_number);
         updateNumber();
-    }
-
-    @Override
-    public void onDestroy() {
-        LocalBroadcastUtil.unregisterReceiver(receiver);
-        super.onDestroy();
     }
 
     private void updateNumber() {
