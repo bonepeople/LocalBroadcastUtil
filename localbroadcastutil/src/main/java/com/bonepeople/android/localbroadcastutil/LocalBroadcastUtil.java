@@ -7,6 +7,8 @@ import android.content.IntentFilter;
 import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 
+import java.util.Objects;
+
 /**
  * 本地广播工具类
  * <p>使本地广播的使用更方便</p>
@@ -23,6 +25,7 @@ public class LocalBroadcastUtil {
      * 初始化本地广播工具类，建议放到Application的onCreate函数中执行
      */
     public static void init(@NonNull Context context) {
+        Objects.requireNonNull(context);
         broadcastManager = LocalBroadcastManager.getInstance(context);
     }
 
@@ -51,7 +54,7 @@ public class LocalBroadcastUtil {
      * @param filter   广播筛选条件
      */
     public static void registerReceiver(@NonNull BroadcastReceiver receiver, @NonNull IntentFilter filter) {
-        checkManagerNotNull();
+        checkNotNull(receiver, filter);
         //防止重复注册，在注册之前先注销原有接收器
         broadcastManager.unregisterReceiver(receiver);
         broadcastManager.registerReceiver(receiver, filter);
@@ -64,7 +67,7 @@ public class LocalBroadcastUtil {
      * @param receiver 非空的广播接收器
      */
     public static void unregisterReceiver(@NonNull BroadcastReceiver receiver) {
-        checkManagerNotNull();
+        checkNotNull(receiver);
         broadcastManager.unregisterReceiver(receiver);
     }
 
@@ -84,12 +87,15 @@ public class LocalBroadcastUtil {
      * @param intent 需要发送的广播内容，intent的action字段必须设置为广播的筛选字段
      */
     public static void sendBroadcast(@NonNull Intent intent) {
-        checkManagerNotNull();
+        checkNotNull(intent);
         broadcastManager.sendBroadcast(intent);
     }
 
-    private static void checkManagerNotNull() {
+    private static void checkNotNull(Object... objects) {
         if (broadcastManager == null)
             throw new IllegalStateException("使用本地广播前必须先调用init(Context)方法进行初始化");
+        for (Object object : objects) {
+            Objects.requireNonNull(object);
+        }
     }
 }
