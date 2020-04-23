@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -19,6 +20,8 @@ import java.util.Objects;
  * @author bonepeople
  */
 public class LocalBroadcastUtil {
+    static final String TAG = "LocalBroadcastUtil";
+    static boolean debugEnable = false;
     private static LocalBroadcastManager broadcastManager;
 
     private LocalBroadcastUtil() {
@@ -30,6 +33,13 @@ public class LocalBroadcastUtil {
     public static void init(@NonNull Context context) {
         Objects.requireNonNull(context);
         broadcastManager = LocalBroadcastManager.getInstance(context);
+    }
+
+    /**
+     * 设置是否开启日志
+     */
+    public static void setDebugEnable(boolean debugEnable) {
+        LocalBroadcastUtil.debugEnable = debugEnable;
     }
 
     /**
@@ -91,6 +101,18 @@ public class LocalBroadcastUtil {
         //防止重复注册，在注册之前先注销原有接收器
         broadcastManager.unregisterReceiver(receiver);
         broadcastManager.registerReceiver(receiver, filter);
+        if (debugEnable) {
+            int count = filter.countActions();
+            StringBuilder stringBuilder = new StringBuilder("注册广播接收器 " + receiver.toString() + " 响应 [");
+            for (int i = 0; i < count; ) {
+                stringBuilder.append(filter.getAction(i));
+                if (++i == count)
+                    stringBuilder.append("]");
+                else
+                    stringBuilder.append(",");
+            }
+            Log.d(TAG, stringBuilder.toString());
+        }
     }
 
     /**
@@ -102,6 +124,9 @@ public class LocalBroadcastUtil {
     public static void unregisterReceiver(@NonNull BroadcastReceiver receiver) {
         checkNotNull(receiver);
         broadcastManager.unregisterReceiver(receiver);
+        if (debugEnable) {
+            Log.d(TAG, receiver.toString() + " 的监听已注销");
+        }
     }
 
     /**
@@ -114,6 +139,9 @@ public class LocalBroadcastUtil {
     public static void bindLifecycle(@NonNull LifecycleOwner lifecycleOwner, @NonNull BroadcastReceiver receiver) {
         checkNotNull(lifecycleOwner, receiver);
         lifecycleOwner.getLifecycle().addObserver(new OnDestroyListener(receiver));
+        if (debugEnable) {
+            Log.d(TAG, "将 " + receiver.toString() + " 绑定至 " + lifecycleOwner.toString() + " 的生命周期中");
+        }
     }
 
     /**
@@ -134,6 +162,9 @@ public class LocalBroadcastUtil {
     public static void sendBroadcast(@NonNull Intent intent) {
         checkNotNull(intent);
         broadcastManager.sendBroadcast(intent);
+        if (debugEnable) {
+            Log.d(TAG, "发送action为 " + intent.getAction() + " 的广播");
+        }
     }
 
     private static void checkNotNull(Object... objects) {
