@@ -9,5 +9,6 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
         LocalBroadcastUtil.init(this);
+        LocalBroadcastUtil.setDebugEnable(true);
     }
 }
