@@ -1,27 +1,22 @@
-## LocalBroadcastUtil - 本地广播工具类
+# LocalBroadcastUtil - 本地广播工具类
 
-### 简介
----
+## 简介
 LocalBroadcastUntil是一个本地广播的工具类，它可以使我们更方便的使用LocalBroadcastManager。
 
 LocalBroadcastManager是安卓系统提供的本地广播管理类，使用这个类可以方便的发送本地广播传递数据且不受线程的影响(消息处理逻辑都在主线程中进行)，在不引入第三方库的情况下，LocalBroadcastManager是本地全局消息处理的最佳方式。
 
-### 集成方法
----
+## 集成方法
 使用Gradle构建工具集成(已针对androidX更新)：
 ```groovy
-// android support 工程
 dependencies {
+    // android support 工程
     implementation 'com.bonepeople.android.support:LocalBroadcastUtil:1.2.1'
-}
-// androidX 工程
-dependencies {
+    // androidX 工程
     implementation 'com.bonepeople.android.lib:LocalBroadcastUtil:1.2.1'
 }
 ```
 
-### 使用示例
----
+## 使用示例
 * 初始化
   
   推荐在`Application`的`onCreate()`函数中进行初始化，初始化的过程中会保存一个`LocalBroadcastManager`对象用于之后的使用。
@@ -80,6 +75,9 @@ dependencies {
   LocalBroadcastUtil.sendBroadcast(Constants.BROADCAST_INCREASE);
   ```
 * 更多详细的使用方法可以参考对应分支中的`simple`工程。
-### 混淆说明
----
+
+## 混淆说明
   本项目对混淆无任何要求。
+  
+## 效果展示
+![示例APP](https://resources.mydaydream.com/img/2020/06/09/024a05e1-c313-4698-9637-821905a46c1b.jpg)
