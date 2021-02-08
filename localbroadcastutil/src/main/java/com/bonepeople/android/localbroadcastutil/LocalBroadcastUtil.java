@@ -4,7 +4,6 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -20,7 +19,7 @@ import java.util.Objects;
  * @author bonepeople
  */
 public class LocalBroadcastUtil {
-    static final String TAG = "LocalBroadcastUtil";
+    static Logger logger = new SimpleLogger();
     static boolean debugEnable = false;
     private static LocalBroadcastManager broadcastManager;
 
@@ -40,6 +39,19 @@ public class LocalBroadcastUtil {
      */
     public static void setDebugEnable(boolean debugEnable) {
         LocalBroadcastUtil.debugEnable = debugEnable;
+    }
+
+    /**
+     * 设置新的日志输出类
+     *
+     * @param logger 实现LocalBroadcastUtil.Logger接口的实现类，传入空值则恢复默认的日志输出类。
+     */
+    public static void setLogger(@Nullable Logger logger) {
+        if (logger == null) {
+            LocalBroadcastUtil.logger = new SimpleLogger();
+        } else {
+            LocalBroadcastUtil.logger = logger;
+        }
     }
 
     /**
@@ -111,7 +123,7 @@ public class LocalBroadcastUtil {
                 else
                     stringBuilder.append(",");
             }
-            Log.d(TAG, stringBuilder.toString());
+            logger.log(stringBuilder.toString());
         }
     }
 
@@ -125,7 +137,7 @@ public class LocalBroadcastUtil {
         checkNotNull(receiver);
         broadcastManager.unregisterReceiver(receiver);
         if (debugEnable) {
-            Log.d(TAG, receiver.toString() + " 的监听已注销");
+            logger.log(receiver.toString() + " 的监听已注销");
         }
     }
 
@@ -140,7 +152,7 @@ public class LocalBroadcastUtil {
         checkNotNull(lifecycleOwner, receiver);
         lifecycleOwner.getLifecycle().addObserver(new OnDestroyListener(receiver));
         if (debugEnable) {
-            Log.d(TAG, "将 " + receiver.toString() + " 绑定至 " + lifecycleOwner.toString() + " 的生命周期中");
+            logger.log("将 " + receiver.toString() + " 绑定至 " + lifecycleOwner.toString() + " 的生命周期中");
         }
     }
 
@@ -163,7 +175,7 @@ public class LocalBroadcastUtil {
         checkNotNull(intent);
         broadcastManager.sendBroadcast(intent);
         if (debugEnable) {
-            Log.d(TAG, "发送action为 " + intent.getAction() + " 的广播");
+            logger.log("发送action为 " + intent.getAction() + " 的广播");
         }
     }
 
@@ -173,5 +185,13 @@ public class LocalBroadcastUtil {
         for (Object object : objects) {
             Objects.requireNonNull(object);
         }
+    }
+
+    /**
+     * 日志输出接口
+     * <p>可以实现此接口进行日志的输出。</p>
+     */
+    public interface Logger {
+        void log(@NonNull String content);
     }
 }
