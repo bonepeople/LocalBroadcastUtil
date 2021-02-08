@@ -1,12 +1,12 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.novoda.bintray-release'
+apply plugin: 'com.github.panpf.bintray-publish'
 
 buildscript {
     repositories {
         jcenter()
     }
     dependencies {
-        classpath 'com.novoda:bintray-release:0.9.1'
+        classpath 'com.github.panpf.bintray-publish:bintray-publish:1.0.0'
     }
 }
 
