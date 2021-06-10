@@ -1,0 +1,53 @@
+apply plugin: 'com.android.library'
+apply plugin: 'com.github.panpf.bintray-publish'
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+    dependencies {
+        classpath 'com.github.panpf.bintray-publish:bintray-publish:1.0.0'
+    }
+}
+
+android {
+    compileSdkVersion rootProject.android.compileSdkVersion
+    buildToolsVersion rootProject.android.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.android.minSdkVersion
+        targetSdkVersion rootProject.android.targetSdkVersion
+        versionCode rootProject.android.versionCode
+        versionName rootProject.android.versionName
+
+        consumerProguardFiles 'consumer-rules.pro'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+
+    implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
+    implementation 'androidx.lifecycle:lifecycle-common:2.3.1'
+}
+
+publish {
+    userOrg = rootProject.publish.userName
+    repoName = rootProject.publish.repositoryName
+    uploadName = rootProject.publish.uploadName
+
+    groupId = rootProject.publish.groupId
+    artifactId = rootProject.publish.artifactId
+    publishVersion = rootProject.publish.publishVersion
+
+    desc = rootProject.publish.projectDesc
+    website = rootProject.publish.githubUrl
+}
