@@ -1,15 +1,5 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'com.github.panpf.bintray-publish'
-
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.github.panpf.bintray-publish:bintray-publish:1.0.0'
-    }
-}
 
 android {
     compileSdkVersion rootProject.android.compileSdkVersion
@@ -45,17 +35,7 @@ dependencies {
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-common:2.3.1'
     implementation 'androidx.core:core-ktx:1.5.0'
-}
 
-publish {
-    userOrg = rootProject.publish.userName
-    repoName = rootProject.publish.repositoryName
-    uploadName = rootProject.publish.uploadName
-
-    groupId = rootProject.publish.groupId
-    artifactId = rootProject.publish.artifactId
-    publishVersion = rootProject.publish.publishVersion
-
-    desc = rootProject.publish.projectDesc
-    website = rootProject.publish.githubUrl
+    // AppStartup https://developer.android.google.cn/topic/libraries/app-startup?hl=zh-cn
+    implementation "androidx.startup:startup-runtime:1.0.0"
 }

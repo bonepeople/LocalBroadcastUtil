@@ -6,6 +6,7 @@ import android.content.Intent
 import android.content.IntentFilter
 import androidx.lifecycle.LifecycleOwner
 import androidx.localbroadcastmanager.content.LocalBroadcastManager
+import androidx.startup.Initializer
 
 /**
  * 本地广播工具类
@@ -16,16 +17,9 @@ import androidx.localbroadcastmanager.content.LocalBroadcastManager
  */
 object LocalBroadcastUtil {
     var logger: Logger = SimpleLogger
-    var DEBUG = false
+    var debug = false
     private lateinit var applicationContext: Context
     private val broadcastManager: LocalBroadcastManager by lazy { LocalBroadcastManager.getInstance(applicationContext) }
-
-    /**
-     * 初始化本地广播工具类，建议放到Application的onCreate函数中执行，仅保存Application，不会执行耗时操作
-     */
-    fun saveApplication(context: Context) {
-        applicationContext = context.applicationContext
-    }
 
     /**
      * 注册广播接收器
@@ -92,7 +86,7 @@ object LocalBroadcastUtil {
         //防止重复注册，在注册之前先注销原有接收器
         broadcastManager.unregisterReceiver(receiver)
         broadcastManager.registerReceiver(receiver, filter)
-        if (DEBUG) {
+        if (debug) {
             val count = filter.countActions()
             val stringBuilder = StringBuilder("注册广播接收器 $receiver 响应 [")
             var i = 0
@@ -113,7 +107,7 @@ object LocalBroadcastUtil {
      */
     fun unregisterReceiver(receiver: BroadcastReceiver) {
         broadcastManager.unregisterReceiver(receiver)
-        if (DEBUG) {
+        if (debug) {
             logger.log("$receiver 的监听已注销")
         }
     }
@@ -128,7 +122,7 @@ object LocalBroadcastUtil {
      */
     fun bindLifecycle(lifecycleOwner: LifecycleOwner, receiver: BroadcastReceiver) {
         lifecycleOwner.lifecycle.addObserver(OnDestroyListener(receiver))
-        if (DEBUG) {
+        if (debug) {
             logger.log("将 $receiver 绑定至 $lifecycleOwner 的生命周期中")
         }
     }
@@ -151,7 +145,7 @@ object LocalBroadcastUtil {
      */
     fun sendBroadcast(intent: Intent) {
         broadcastManager.sendBroadcast(intent)
-        if (DEBUG) {
+        if (debug) {
             logger.log("发送action为 " + intent.action + " 的广播")
         }
     }
@@ -163,5 +157,16 @@ object LocalBroadcastUtil {
      */
     interface Logger {
         fun log(content: String)
+    }
+
+    class AppInitializer : Initializer<LocalBroadcastUtil> {
+        override fun create(context: Context): LocalBroadcastUtil {
+            applicationContext = context
+            return LocalBroadcastUtil
+        }
+
+        override fun dependencies(): List<Class<out Initializer<*>>> {
+            return emptyList()
+        }
     }
 }

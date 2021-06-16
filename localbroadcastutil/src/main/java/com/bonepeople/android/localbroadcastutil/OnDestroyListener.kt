@@ -12,7 +12,7 @@ class OnDestroyListener(private val receiver: BroadcastReceiver) : LifecycleObse
     fun unregister(lifecycleOwner: LifecycleOwner) {
         LocalBroadcastUtil.unregisterReceiver(receiver)
         lifecycleOwner.lifecycle.removeObserver(this)
-        if (LocalBroadcastUtil.DEBUG) {
+        if (LocalBroadcastUtil.debug) {
             LocalBroadcastUtil.logger.log("已自动注销 $receiver")
         }
     }
