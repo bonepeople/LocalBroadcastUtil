@@ -29,7 +29,7 @@ public class FragmentB extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         textView_number = view.findViewById(R.id.textView_number);
-        LocalBroadcastUtil.registerReceiver(getViewLifecycleOwner(), receiver, Constants.BROADCAST_INCREASE, Constants.BROADCAST_REDUCE);
+        LocalBroadcastUtil.INSTANCE.registerReceiver(getViewLifecycleOwner(), receiver, Constants.BROADCAST_INCREASE, Constants.BROADCAST_REDUCE);
         updateNumber();
     }
 

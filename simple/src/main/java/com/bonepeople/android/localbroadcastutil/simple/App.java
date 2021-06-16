@@ -11,9 +11,9 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        LocalBroadcastUtil.init(this);
-        LocalBroadcastUtil.setDebugEnable(true);
-        LocalBroadcastUtil.setLogger(new LocalBroadcastUtil.Logger() {
+        LocalBroadcastUtil.INSTANCE.saveApplication(this);
+        LocalBroadcastUtil.INSTANCE.setDEBUG(true);
+        LocalBroadcastUtil.INSTANCE.setLogger(new LocalBroadcastUtil.Logger() {
             @Override
             public void log(@NonNull String content) {
                 Log.d("LocalBroadcastSimple", content);

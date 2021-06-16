@@ -28,10 +28,10 @@ public class FragmentA extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.button_increase:
-                LocalBroadcastUtil.sendBroadcast(Constants.BROADCAST_INCREASE);
+                LocalBroadcastUtil.INSTANCE.sendBroadcast(Constants.BROADCAST_INCREASE);
                 break;
             case R.id.button_reduce:
-                LocalBroadcastUtil.sendBroadcast(Constants.BROADCAST_REDUCE);
+                LocalBroadcastUtil.INSTANCE.sendBroadcast(Constants.BROADCAST_REDUCE);
                 break;
         }
     }
