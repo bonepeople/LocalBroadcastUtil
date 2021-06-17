@@ -10,11 +10,15 @@
 ## 集成方法
 使用Gradle构建工具集成：(后续版本将仅支持androidx环境)
 ```groovy
+repositories {
+    jcenter()
+    maven { url 'https://jitpack.io' }
+}
 dependencies {
     // android support 工程
     implementation 'com.bonepeople.android.support:LocalBroadcastUtil:1.2.2'
     // androidX 工程
-    implementation 'com.bonepeople.android.lib:LocalBroadcastUtil:1.2.2'
+    implementation 'com.github.bonepeople:LocalBroadcastUtil:1.3.2'
 }
 ```
 
