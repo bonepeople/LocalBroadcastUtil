@@ -1,15 +1,15 @@
-apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
+plugins {
+    id 'com.android.library'
+    id 'kotlin-android'
+    id 'maven-publish'
+}
 
 android {
-    compileSdkVersion rootProject.android.compileSdkVersion
-    buildToolsVersion rootProject.android.buildToolsVersion
+    compileSdk rootProject.androidConfig.compileSdk
 
     defaultConfig {
-        minSdkVersion rootProject.android.minSdkVersion
-        targetSdkVersion rootProject.android.targetSdkVersion
-        versionCode rootProject.android.versionCode
-        versionName rootProject.android.versionName
+        minSdk rootProject.androidConfig.minSdk
+        targetSdk rootProject.androidConfig.targetSdk
 
         consumerProguardFiles 'consumer-rules.pro'
     }
@@ -30,12 +30,23 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-
+    implementation 'androidx.core:core-ktx:1.6.0'
     implementation 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     implementation 'androidx.lifecycle:lifecycle-common:2.3.1'
-    implementation 'androidx.core:core-ktx:1.5.0'
 
     // AppStartup https://developer.android.google.cn/topic/libraries/app-startup?hl=zh-cn
-    implementation "androidx.startup:startup-runtime:1.0.0"
+    implementation "androidx.startup:startup-runtime:1.1.1"
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = rootProject.publishConfig.groupId
+                artifactId = rootProject.publishConfig.artifactId
+                version = rootProject.publishConfig.publishVersion
+            }
+        }
+    }
 }
