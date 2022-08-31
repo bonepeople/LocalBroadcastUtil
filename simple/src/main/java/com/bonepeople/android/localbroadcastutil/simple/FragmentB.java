@@ -13,7 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.bonepeople.android.localbroadcastutil.LocalBroadcastUtil;
+import com.bonepeople.android.localbroadcastutil.LocalBroadcastHelper;
 
 public class FragmentB extends Fragment {
     private TextView textView_number;
@@ -29,7 +29,7 @@ public class FragmentB extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         textView_number = view.findViewById(R.id.textView_number);
-        LocalBroadcastUtil.INSTANCE.registerReceiver(getViewLifecycleOwner(), receiver, Constants.BROADCAST_INCREASE, Constants.BROADCAST_REDUCE);
+        new LocalBroadcastHelper().setLifecycleOwner(getViewLifecycleOwner()).setReceiver(receiver).addAction(Constants.BROADCAST_INCREASE, Constants.BROADCAST_REDUCE).register();
         updateNumber();
     }
 
