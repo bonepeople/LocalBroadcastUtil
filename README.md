@@ -8,82 +8,62 @@
 > 例如用户登录成功时，不需要使用startActivityForResult，也不需要传递回调函数，只需要发送一个登录成功的本地广播，在需要刷新的页面中添加响应代码，就可以轻松搞定一个全局状态更新的效果。
 
 ## 集成方法
-使用Gradle构建工具集成：(后续版本将仅支持androidx环境)
+使用Gradle构建工具集成：
 ```groovy
 repositories {
-    jcenter()
     maven { url 'https://jitpack.io' }
 }
 dependencies {
-    // android support 工程
-    implementation 'com.bonepeople.android.support:LocalBroadcastUtil:1.2.2'
-    // androidX 工程
-    implementation 'com.github.bonepeople:LocalBroadcastUtil:1.3.2'
+    implementation 'com.github.bonepeople:LocalBroadcastUtil:1.4.0'
 }
 ```
 
 ## 使用示例
-* 初始化
-  
-  推荐在`Application`的`onCreate()`函数中进行初始化，初始化的过程中会保存一个`LocalBroadcastManager`对象用于之后的使用。
-  
-  **！未经初始化的工具类无法使用。**
-  ```java
-  public class App extends Application {
-      @Override
-      public void onCreate() {
-          super.onCreate();
-          LocalBroadcastUtil.init(this);
-      }
-  }
-  ```
-* 注册接收器
-  
-  使用`registerReceiver(LifecycleOwner, BroadcastReceiver, String...)`可以快捷的注册接收器，且无需担心内存泄漏，该receiver会在界面销毁的时候自动注销。
+##### 注册广播接收器
+注册过程中需要的`LifecycleOwner`可以为空，该参数主要是用于生命周期的绑定，确保`receiver`会在界面销毁的时候自动注销。
+> `Activity`自身可作为`LifecycleOwner`参数使用，`Fragment`可以调用`getViewLifecycleOwner()`方法获取相应的`LifecycleOwner`
+1. `LocalBroadcastUntil`中保留了一个通用的注册方法，可以使用该方法直接注册广播接收器。
+```kotlin
+LocalBroadcastUtil.registerReceiver(lifecycleOwner, broadcastReceiver, intentFilter)
+```
+2. 除了基本的注册方法，还提供了`LocalBroadcastHelper`类用来简化注册广播的流程。
+`LocalBroadcastHelper`采用了建造者模式，用户通过调用设置方法配置广播接收器，最后调用`register`方法进行注册。
+> 使用`setLifecycleOwner`、`setReceiver`和`setFilter`方法可以直接设置相应的属性。
+> 使用`onReceive`方法可以传入一个回调方法，该方法被包装为一个`BroadcastReceiver`，在接收到广播的时候直接调用，简化了用户自定义`BroadcastReceiver`的流程。
+> 使用`addAction`方法可以直接传入一个或多个筛选条件，将这些筛选条件自动放到`IntentFilter`中并用于注册广播接收器。
+```kotlin
+//常规注册方法
+LocalBroadcastHelper()
+    .setLifecycleOwner(viewLifecycleOwner)
+    .addAction("BROADCAST_INCREASE", "BROADCAST_REDUCE")
+    .onReceive {
+        it.action
+    }
+    .register()
 
-  **！`Activity`自身可作为`LifecycleOwner`参数使用，`Fragment`可以调用`getViewLifecycleOwner()`方法获取相应的`LifecycleOwner`**
-  ```java
-  // 创建广播接收器，用于处理广播消息
-  BroadcastReceiver receiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                // 获取广播的action
-                String action = intent.getAction();
-                if (action == null)
-                    return;
-                // 根据广播的action进行事件的处理，此时处于主线程中
-                switch (action) {
-                    case Constants.BROADCAST_INCREASE:
-                        Log.d(TAG, Constants.BROADCAST_INCREASE);
-                        break;
-                    case Constants.BROADCAST_REDUCE:
-                        Log.d(TAG, Constants.BROADCAST_REDUCE);
-                        break;
-                }
-            }
-        };
-  
-  // 使用指定的actions注册广播接收器，并绑定至当前页面的生命周期
-  LocalBroadcastUtil.registerReceiver(this, receiver, Constants.BROADCAST_INCREASE, Constants.BROADCAST_REDUCE);
-  ```
-  对于额外的广播筛选条件设置，可以使用`registerReceiver(LifecycleOwner, BroadcastReceiver, IntentFilter)`方法进行注册。
-  
-  如果在注册广播接收器的时候并未提供LifecycleOwner参数，在广播接收器使用完毕后需要在合适的时机调用`unregisterReceiver(BroadcastReceiver)`注销接收器。
-  ```java
-  // 如果receiver已绑定至界面的生命周期，则无需手动注销。
-  LocalBroadcastUtil.unregisterReceiver(receiver)
-  ```
-* 发送广播
-  
-  如果是简单的消息广播，可直接调用`sendBroadcast(String)`发送广播，如果需要传递数据，需要调用`sendBroadcast(Intent)`发送广播。
-  ```java
-  // 使用指定的action发送广播
-  LocalBroadcastUtil.sendBroadcast(Constants.BROADCAST_INCREASE);
-  ```
-* 项目的源码存放于对应的分支中，更多详细的使用方法可以参考对应分支中的`simple`工程。
+//快捷注册方法
+LocalBroadcastHelper().register(viewLifecycleOwner, "BROADCAST_INCREASE", "BROADCAST_REDUCE") {
+    it.action
+}
+```
+##### 发送广播
+如果是简单的消息广播，可直接调用`sendBroadcast(String)`发送广播，如果需要传递数据，可以自定义`Intent`并调用`sendBroadcast(Intent)`发送广播。
+```kotlin
+LocalBroadcastUtil.sendBroadcast("BROADCAST_INCREASE")
+```
+```kotlin
+val intent = Intent("BROADCAST_INCREASE")
+intent.putExtra("step", 2)
+LocalBroadcastUtil.sendBroadcast(intent)
+```
+##### 注销广播接收器
+如果在注册广播接收器的时候提供了`LifecycleOwner`参数，则无需再手动注销广播接收器，该接收器会在宿主的生命周期结束时自动注销。
+```kotlin
+LocalBroadcastUtil.unregisterReceiver(broadcastReceiver)
+```
 
 ## 混淆说明
-  本项目对混淆无任何要求。
+本项目对混淆无任何要求。
   
 ## 效果展示
 ![示例APP](https://resources.mydaydream.com/img/2020/06/09/024a05e1-c313-4698-9637-821905a46c1b.jpg)
