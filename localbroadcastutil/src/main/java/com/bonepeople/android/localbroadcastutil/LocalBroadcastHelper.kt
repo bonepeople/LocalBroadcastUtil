@@ -84,10 +84,53 @@ class LocalBroadcastHelper {
      * 注册广播的快捷方法
      * @return 将用于注册的[BroadcastReceiver]返回，后续可以用于注销广播或重新注册广播
      */
+    @Deprecated("请使用静态方法")
     fun register(lifecycleOwner: LifecycleOwner?, vararg actions: String, receiveAction: (Intent) -> Unit): BroadcastReceiver {
         setLifecycleOwner(lifecycleOwner)
         onReceive(receiveAction)
         addAction(*actions)
         return register()
+    }
+
+    companion object {
+        /**
+         * 注册广播的快捷方法
+         * @return 将用于注册的[BroadcastReceiver]返回，后续可以用于注销广播或重新注册广播
+         */
+        fun register(lifecycleOwner: LifecycleOwner?, vararg actions: String, receiveAction: (Intent) -> Unit): BroadcastReceiver {
+            return LocalBroadcastHelper().setLifecycleOwner(lifecycleOwner).onReceive(receiveAction).addAction(*actions).register()
+        }
+
+        /**
+         * 设置生命周期监听
+         * + 注册广播时会将生命周期绑定至提供的宿主上
+         */
+        fun setLifecycleOwner(lifecycleOwner: LifecycleOwner?) = LocalBroadcastHelper().setLifecycleOwner(lifecycleOwner)
+
+        /**
+         * 设置接收广播后的回调函数
+         * + 接收到的[Intent]会以参数形式提供
+         * + 调用该方法会生成一个新的[BroadcastReceiver]用于注册广播，在注册前请先妥善处理之前已经注册的广播接收器
+         * + 会覆盖现有的广播接收器
+         */
+        fun onReceive(receiveAction: (intent: Intent) -> Unit) = LocalBroadcastHelper().onReceive(receiveAction)
+
+        /**
+         * 设置广播接收器
+         * + 会覆盖现有的广播接收器
+         */
+        fun setReceiver(receiver: BroadcastReceiver) = LocalBroadcastHelper().setReceiver(receiver)
+
+        /**
+         * 添加广播筛选字段
+         * @param actions 广播的筛选字段，该字段会被加入到action中，需要包含至少一个广播筛选字段
+         */
+        fun addAction(vararg actions: String) = LocalBroadcastHelper().addAction(*actions)
+
+        /**
+         * 设置广播筛选条件
+         * + 会覆盖现有的广播筛选条件
+         */
+        fun setFilter(filter: IntentFilter) = LocalBroadcastHelper().setFilter(filter)
     }
 }
