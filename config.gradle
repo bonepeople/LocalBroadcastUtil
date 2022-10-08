@@ -3,8 +3,8 @@ ext {
             minSdk     : 21,
             targetSdk  : 31,
             compileSdk : 31,
-            versionCode: 7,
-            versionName: "1.4.0",
+            versionCode: 8,
+            versionName: "1.4.1",
     ]
     publishConfig = [
             userName      : "bonepeople",
@@ -13,7 +13,7 @@ ext {
 
             groupId       : "com.bonepeople.android.lib",
             artifactId    : "LocalBroadcastUtil",
-            publishVersion: "1.4.0",
+            publishVersion: "1.4.1",
             licences      : ['Apache-2.0'],
 
             projectName   : "LocalBroadcastUtil",
